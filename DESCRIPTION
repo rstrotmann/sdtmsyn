@@ -1,0 +1,30 @@
+Package: sdtmsyn
+Type: Package
+Title: What the Package Does (Title Case)
+Version: 0.1.0
+Author: person("Rainer", "Strotmann", , "rainer.strotmann@mailbox.org", role = c("aut", "cre"))
+Maintainer: The package maintainer <yourself@somewhere.net>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    assertr,
+    assertthat,
+    dplyr,
+    tidyselect,
+    DT,
+    gdata,
+    ggplot2,
+    lifecycle,
+    lubridate,
+    PKNCA,
+    pracma,
+    rlang,
+    rxode2,
+    stringr,
+    tidyr
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
