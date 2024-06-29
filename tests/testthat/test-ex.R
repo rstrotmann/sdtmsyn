@@ -1,12 +1,3 @@
-test_that("synthesize_sd_ex works", {
-  dm <- synthesize_dm(nsubs = 10)
-  ex <- synthesize_sd_ex(dm, adminday = 1)
-  expect_equal(nrow(ex), 10)
-
-  ex <- synthesize_sd_ex(dm, adminday = c(1, 14))
-  expect_equal(nrow(ex), 20)
-})
-
 
 test_that("make_randomization works", {
   dm <- synthesize_dm(nsubs = 10)

@@ -19,21 +19,21 @@ randomization_table <- function(
       DOSE = c(500, 250))
 ) {
   temp <- dm %>%
-    group_by(ACTARMCD) %>%
-    mutate(subject = case_when(ACTARMCD != "SCRNFAIL" ~ row_number())) %>%
+    group_by(.data$ACTARMCD) %>%
+    mutate(subject = case_when(.data$ACTARMCD != "SCRNFAIL" ~ row_number())) %>%
     ungroup() %>%
     select(subject, USUBJID)
 
   nsubj <- max(temp$subject, na.rm = TRUE)
-  nperiod <- unique(sapply(sequence, str_length))
+  nperiod <- unique(sapply(sequence, stringr::str_length))
 
   if(length(adminday) != nperiod)
     stop("Mismatch between number of administration days and periods")
 
-  RL4(nsubj = nsubj, sequence)$rl %>%
-    mutate(TREATMENT = strsplit(sequence, split = "", fixed = TRUE)) %>%
-    unnest(TREATMENT) %>%
-    group_by(subject) %>%
+  randomizeBE::RL4(nsubj = nsubj, sequence)$rl %>%
+    mutate(TREATMENT = strsplit(.data$sequence, split = "", fixed = TRUE)) %>%
+    tidyr::unnest(TREATMENT) %>%
+    group_by(.data$subject) %>%
     mutate(PERIOD = row_number()) %>%
     mutate(EXDY = adminday[.data$PERIOD]) %>%
     left_join(treatment, by = "TREATMENT") %>%
@@ -67,7 +67,7 @@ sad_table <- function(
       treatment %>%
         rowwise() %>%
         mutate(x = list(seq(1, N))) %>%
-        unnest(x) %>%
+        tidyr::unnest(x) %>%
         select(-c(N, x))
     ) %>%
     mutate(seqno = 1,
@@ -191,18 +191,18 @@ miss_admins <- function(start_dtc, end_dtc, dose = 500, dose_red = 250,
   # create missed administration days
   dose_reduction <- red_prob != 0
   treatment_duration <- as.numeric(end_dtc - start_dtc) + 1
-  n <- floor(treatment_duration * runif(1, 0, missed_prob))
+  n <- floor(treatment_duration * stats::runif(1, 0, missed_prob))
   admins <- data.frame(
     day = seq(1, treatment_duration),
     dtc = seq(start_dtc, end_dtc, by = "1 day"),
     dose = dose
   )
-  missed_days <- sort(unique(floor(runif(n, 2, treatment_duration))))
+  missed_days <- sort(unique(floor(stats::runif(n, 2, treatment_duration))))
   admins[missed_days, "dtc"] <- NA
 
   if (dose_reduction) {
-    if (runif(1, 0, 1) < red_prob) {
-      red_start_dy <- floor(runif(1, 7, treatment_duration))
+    if (stats::runif(1, 0, 1) < red_prob) {
+      red_start_dy <- floor(stats::runif(1, 7, treatment_duration))
       red_days <- seq(red_start_dy, treatment_duration)
       admins[red_days, "dose"] <- dose_red
     }
@@ -214,22 +214,22 @@ miss_admins <- function(start_dtc, end_dtc, dose = 500, dose_red = 250,
 
   admins %>%
     mutate(prev_dose = lag(dose)) %>%
-    mutate(dose_red_start = dose != prev_dose) %>%
-    mutate(dose_restart = lag(is.na(dtc))) %>%
-    filter(!is.na(dtc)) %>%
-    mutate(block = dose_red_start == T | dose_restart == T | row_number() == 1) %>%
-    group_by(block) %>%
-    mutate(block_id = case_when(block == 1 ~ row_number(),
+    mutate(dose_red_start = dose != .data$prev_dose) %>%
+    mutate(dose_restart = lag(is.na(.data$dtc))) %>%
+    filter(!is.na(.data$dtc)) %>%
+    mutate(block = .data$dose_red_start == T | .data$dose_restart == T | row_number() == 1) %>%
+    group_by(.data$block) %>%
+    mutate(block_id = case_when(.data$block == 1 ~ row_number(),
                                 .default = NA
     )) %>%
     ungroup() %>%
     as.data.frame() %>%
-    fill(block_id, .direction = "down") %>%
-    group_by(block_id) %>%
-    mutate(EXSTDTC = dtc[1], EXENDTC = dtc[n()]) %>%
+    tidyr::fill(.data$block_id, .direction = "down") %>%
+    group_by(.data$block_id) %>%
+    mutate(EXSTDTC = .data$dtc[1], EXENDTC = .data$dtc[n()]) %>%
     ungroup() %>%
     as.data.frame() %>%
-    distinct(EXSTDTC, EXENDTC, DOSE = dose)
+    distinct(.data$EXSTDTC, .data$EXENDTC, DOSE = .data$dose)
 }
 
 
@@ -262,7 +262,7 @@ synthesize_md_ex <- function(dm,
     dplyr::mutate(DOMAIN = "EX") %>%
 
     # make random treatment duration between 60% and 100% of the specified
-    dplyr::mutate(trtdur = floor(runif(
+    dplyr::mutate(trtdur = floor(stats::runif(
       nrow(.), treatment_duration * .6,
       treatment_duration + 1))) %>%
     dplyr::mutate(
@@ -274,7 +274,7 @@ synthesize_md_ex <- function(dm,
   if (missed_doses == TRUE) {
     ex <- ex %>%
       dplyr::group_by(.data$DOMAIN, .data$STUDYID, .data$USUBJID) %>%
-      tidyr::expand(miss_admins(EXSTDTC, EXENDTC, red_prob = red_prob)) %>%
+      tidyr::expand(miss_admins(EXSTDTC, .data$EXENDTC, red_prob = red_prob)) %>%
       dplyr::ungroup() %>%
       as.data.frame()
   }

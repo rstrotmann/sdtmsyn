@@ -24,7 +24,11 @@ Imports:
     rlang,
     rxode2,
     stringr,
-    tidyr
+    tidyr,
+    tibble,
+    randomizeBE,
+    stats
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
+RoxygenNote: 7.3.1

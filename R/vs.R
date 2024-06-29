@@ -8,7 +8,7 @@ synthesize_vs <- function(dm) {
     # filter(ACTARMCD!="SCRNFAIL") %>%
     dplyr::select(c("STUDYID", "USUBJID", "RFSTDTC")) %>%
     group_by_all() %>%
-    expand(VSTESTCD = c("HEIGHT", "WEIGHT")) %>%
+    tidyr::expand(VSTESTCD = c("HEIGHT", "WEIGHT")) %>%
     mutate(VSORRES = case_when(
       .data$VSTESTCD == "HEIGHT" ~ rnorm(1, 179, 6.81),
       .data$VSTESTCD == "WEIGHT" ~ rnorm(1, 78.5, 10.2)
