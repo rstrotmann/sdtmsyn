@@ -1,43 +1,3 @@
-# study_sad <- function() {
-#   dm <- synthesize_dm(
-#     nsubs = 48,
-#     studyid = "2024000001",
-#     nsites = 1,
-#     female_fraction = 0,
-#     duration = 10,
-#     min_age = 18,
-#     max_age = 55)
-#   r <- sad_table(
-#     dm,
-#     treatment = data.frame(
-#       EXDOSE = c(5, 10, 20, 50, 100, 200, 500, 800, 1000, 500),
-#       N = c(3, 3, 3, 3, 6, 3, 6, 6, 3, 12)))
-#   ex <- synthesize_sd_ex(dm, r)
-#   vs <- synthesize_vs(dm)
-#   lb <- synthesize_lb(dm)
-#   pc <- make_sd_pc(dm, ex, vs, lb, rich_sampling_scheme)
-#
-#   dm <- left_join(dm,
-#       ex %>%
-#         group_by(.data$USUBJID) %>%
-#         mutate(RFENDTC = max(.data$EXENDTC, na.rm = T)) %>%
-#         distinct(.data$USUBJID, .data$RFENDTC),
-#       by = "USUBJID"
-#     )
-#
-#   out = lapply(
-#     list(
-#       dm = dm,
-#       vs = vs,
-#       lb = lb,
-#       ex = ex,
-#       pc = pc
-#     ), isofy_dates)
-#
-#   return(out)
-# }
-
-
 #' Synthesize SDTM data for a clinical study
 #'
 #' @param dm The DM domain as data frame.
@@ -102,3 +62,26 @@ make_study_sad <- function() {
       500,     12))
   make_study(dm, treatment_table, rich_sampling_scheme)
 }
+
+
+make_study_fe <- function() {
+  dm <- synthesize_dm(
+    nsubs = 16,
+    studyid = "202400002",
+    nsites = 1,
+    female_fraction = 0.5,
+    duration = 14)
+
+  treatment_table <- randomization_table(
+    dm,
+    sequence = c("AB", "BA"),
+    adminday = c(1, 8),
+    treatment = data.frame(
+      TREATMENT = c("A", "B"),
+      FOOD = c(1, 0)
+    ))
+  make_study(dm, treatment_table, rich_sampling_scheme)
+}
+
+
+
