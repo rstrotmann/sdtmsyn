@@ -1,11 +1,14 @@
 Package: sdtmsyn
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Generate Synthetic SDTM Data for PK Studies
 Version: 0.2.0
-Author: person("Rainer", "Strotmann", , "rainer.strotmann@mailbox.org", role = c("aut", "cre"))
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Authors@R:
+    person("Rainer", "Strotmann", , "rainer.strotmann@mailbox.org", role = c("aut", "cre"))
+Maintainer: Rainer Strotmann <rainer.strotmann@mailbox.org>
+Description: This package includes functions to generate SDTM data for 
+    typical PK studies, including the domains DM, VS, EX and PC. This data can
+    be used for testing of downstream applications like provided by the the nif
+    package.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
@@ -35,3 +38,5 @@ Suggests:
 Config/testthat/edition: 3
 RoxygenNote: 7.3.1
 VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)

@@ -1,0 +1,51 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# sdtmsyn
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+sdtmsyn is an R package to generate synthetic SDTM data for fictional clinical
+PK studies with the drug 'examplinib'.
+
+The generated data are based on simple heuristics for vital signs and a popPK
+model for the drug and its metabolite and reflect a realistic participant
+population.
+
+## Installation
+
+You can install the development version of sdtmsyn like so:
+
+``` r
+devtools::install_github("rstrotmann/sdtmsyn)
+```
+
+## Example
+
+This is a basic example to generate SDTM domains DM, VS, EX and PC for a
+fictional food effect study with 'examplinib':
+
+```{r example, warning = F}
+library(sdtmsyn)
+
+sdtm <- make_study_fe()
+names(sdtm)
+head(sdtm$dm, 5)
+head(sdtm$vs, 5)
+head(sdtm$ex, 5)
+head(sdtm$pc, 5)
+```
+

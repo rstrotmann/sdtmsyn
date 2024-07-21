@@ -5,14 +5,14 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>What the Package Does (Title Case) • sdtmsyn</title>
+<title>Generate Synthetic SDTM Data for PK Studies • sdtmsyn</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
 <script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
-<script src="pkgdown.js"></script><meta property="og:title" content="What the Package Does (Title Case)">
-<meta property="og:description" content="More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.">
+<script src="pkgdown.js"></script><meta property="og:title" content="Generate Synthetic SDTM Data for PK Studies">
+<meta property="og:description" content="This package includes functions to generate SDTM data for typical PK studies, including the domains DM, VS, EX and PC. This data can be used for testing of downstream applications like provided by the the nif package.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -67,7 +67,89 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-More about what it does (maybe more than one line) Use four spaces when indenting paragraphs within the Description.
+<div class="section level1">
+<div class="page-header"><h1 id="sdtmsyn">sdtmsyn<a class="anchor" aria-label="anchor" href="#sdtmsyn"></a>
+</h1></div>
+<!-- badges: start -->
+<!-- badges: end -->
+<p>sdtmsyn is an R package to generate synthetic SDTM data for fictional clinical PK studies with the drug ‘examplinib’.</p>
+<p>The generated data are based on simple heuristics for vital signs and a popPK model for the drug and its metabolite and reflect a realistic participant population.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of sdtmsyn like so:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>devtools<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">"rstrotmann/sdtmsyn)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
+</h2>
+<p>This is a basic example to generate SDTM domains DM, VS, EX and PC for a fictional food effect study with ‘examplinib’:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">sdtmsyn</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sdtm</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/make_study_fe.html">make_study_fe</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">sdtm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "dm" "vs" "lb" "ex" "pc"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sdtm</span><span class="op">$</span><span class="va">dm</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt;   SITEID  SUBJID         ACTARM ACTARMCD          RFICDTC          RFSTDTC</span></span>
+<span><span class="co">#&gt; 1    101 1010001 Screen Failure SCRNFAIL 2000-12-23T11:20             &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2    101 1010002 Screen Failure SCRNFAIL 2000-12-23T10:01             &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3    101 1010003                      BA 2000-12-24T11:09 2001-01-05T11:09</span></span>
+<span><span class="co">#&gt; 4    101 1010004                      AB 2000-12-25T11:25 2001-01-05T11:25</span></span>
+<span><span class="co">#&gt; 5    101 1010005                      BA 2000-12-28T08:17 2001-01-06T08:17</span></span>
+<span><span class="co">#&gt;           RFXSTDTC   STUDYID          USUBJID SEX AGE  AGEU COUNTRY DOMAIN</span></span>
+<span><span class="co">#&gt; 1             &lt;NA&gt; 202400002 2024000021010001   M  32 YEARS     DEU     DM</span></span>
+<span><span class="co">#&gt; 2             &lt;NA&gt; 202400002 2024000021010002   M  39 YEARS     DEU     DM</span></span>
+<span><span class="co">#&gt; 3 2001-01-05T11:09 202400002 2024000021010003   F  40 YEARS     DEU     DM</span></span>
+<span><span class="co">#&gt; 4 2001-01-05T11:25 202400002 2024000021010004   M  41 YEARS     DEU     DM</span></span>
+<span><span class="co">#&gt; 5 2001-01-06T08:17 202400002 2024000021010005   F  45 YEARS     DEU     DM</span></span>
+<span><span class="co">#&gt;                                          ARM    ARMCD                      RACE</span></span>
+<span><span class="co">#&gt; 1                             Screen Failure SCRNFAIL                     WHITE</span></span>
+<span><span class="co">#&gt; 2                             Screen Failure SCRNFAIL                     WHITE</span></span>
+<span><span class="co">#&gt; 3 Fasted administration - Fed administration       BA                     WHITE</span></span>
+<span><span class="co">#&gt; 4 Fed administration - Fasted administration       AB BLACK OR AFRICAN AMERICAN</span></span>
+<span><span class="co">#&gt; 5 Fasted administration - Fed administration       BA                     WHITE</span></span>
+<span><span class="co">#&gt;   ETHNIC          RFENDTC                                    ARCTARM</span></span>
+<span><span class="co">#&gt; 1                    &lt;NA&gt;                             Screen Failure</span></span>
+<span><span class="co">#&gt; 2                    &lt;NA&gt;                             Screen Failure</span></span>
+<span><span class="co">#&gt; 3        2001-01-12T11:09 Fasted administration - Fed administration</span></span>
+<span><span class="co">#&gt; 4        2001-01-12T11:25 Fed administration - Fasted administration</span></span>
+<span><span class="co">#&gt; 5        2001-01-13T08:17 Fasted administration - Fed administration</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sdtm</span><span class="op">$</span><span class="va">vs</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt;     STUDYID          USUBJID VSTESTCD   VSORRES VSTEST VSORRESU VSSTRESN</span></span>
+<span><span class="co">#&gt; 1 202400002 2024000021010001   HEIGHT 174.87563 Height       cm    174.9</span></span>
+<span><span class="co">#&gt; 2 202400002 2024000021010001   WEIGHT  78.02786 Weight       kg     78.0</span></span>
+<span><span class="co">#&gt; 3 202400002 2024000021010002   HEIGHT 187.64142 Height       cm    187.6</span></span>
+<span><span class="co">#&gt; 4 202400002 2024000021010002   WEIGHT  67.98458 Weight       kg     68.0</span></span>
+<span><span class="co">#&gt; 5 202400002 2024000021010003   HEIGHT 175.61113 Height       cm    175.6</span></span>
+<span><span class="co">#&gt;   VSSTRESU     EPOCH DOMAIN VSBLFL     VISIT            VSDTC</span></span>
+<span><span class="co">#&gt; 1       cm SCREENING     VS      Y SCREENING             &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 2       kg SCREENING     VS      Y SCREENING             &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 3       cm SCREENING     VS      Y SCREENING             &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 4       kg SCREENING     VS      Y SCREENING             &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5       cm SCREENING     VS      Y SCREENING 2001-01-05T11:09</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sdtm</span><span class="op">$</span><span class="va">ex</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 13</span></span>
+<span><span class="co">#&gt;   STUDYID   USUBJID     RFSTDTC DOMAIN EXTRT  EXDY EXDOSE EXROUTE EXDOSFRM EPOCH</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;       &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 202400002 2024000021… 2001-0… EX     RS20…     1    100 ORAL    TABLET   RAND…</span></span>
+<span><span class="co">#&gt; 2 202400002 2024000021… 2001-0… EX     RS20…     8    100 ORAL    TABLET   RAND…</span></span>
+<span><span class="co">#&gt; 3 202400002 2024000021… 2001-0… EX     RS20…     1    100 ORAL    TABLET   RAND…</span></span>
+<span><span class="co">#&gt; 4 202400002 2024000021… 2001-0… EX     RS20…     8    100 ORAL    TABLET   RAND…</span></span>
+<span><span class="co">#&gt; 5 202400002 2024000021… 2001-0… EX     RS20…     1    100 ORAL    TABLET   RAND…</span></span>
+<span><span class="co">#&gt; # ℹ 3 more variables: EXSTDTC &lt;chr&gt;, EXENDTC &lt;chr&gt;, EXSEQ &lt;int&gt;</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sdtm</span><span class="op">$</span><span class="va">pc</span>, <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 13</span></span>
+<span><span class="co">#&gt;   USUBJID    NTIME PCTESTCD PCSTRESN PCTEST STUDYID DOMAIN PCELTM PCTPTNUM PCDTC</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;</span></span>
+<span><span class="co">#&gt; 1 202400002…   0   RS2023       0    RS2023 202400… PC     PT0H        0   2001…</span></span>
+<span><span class="co">#&gt; 2 202400002…   0   RS20234…     0    RS202… 202400… PC     PT0H        0   2001…</span></span>
+<span><span class="co">#&gt; 3 202400002…   0.5 RS2023      31.8  RS2023 202400… PC     PT0.5H      0.5 2001…</span></span>
+<span><span class="co">#&gt; 4 202400002…   0.5 RS20234…     7.18 RS202… 202400… PC     PT0.5H      0.5 2001…</span></span>
+<span><span class="co">#&gt; 5 202400002…   1   RS2023     134.   RS2023 202400… PC     PT1H        1   2001…</span></span>
+<span><span class="co">#&gt; # ℹ 3 more variables: PCSEQ &lt;int&gt;, PCSPEC &lt;chr&gt;, PCRFTDTC &lt;chr&gt;</span></span></code></pre></div>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
@@ -90,7 +172,7 @@ More about what it does (maybe more than one line) Use four spaces when indentin
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>The package maintainer <br><small class="roles"> Maintainer </small>  </li>
+<li>Rainer Strotmann <br><small class="roles"> Author, maintainer </small>  </li>
 </ul>
 </div>
 
@@ -102,7 +184,7 @@ More about what it does (maybe more than one line) Use four spaces when indentin
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by The package maintainer.</p>
+<p>Developed by Rainer Strotmann.</p>
 </div>
 
 <div class="pkgdown">
