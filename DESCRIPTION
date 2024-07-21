@@ -1,7 +1,7 @@
 Package: sdtmsyn
 Type: Package
 Title: Generate Synthetic SDTM Data for PK Studies
-Version: 0.2.0
+Version: 0.2.1
 Authors@R:
     person("Rainer", "Strotmann", , "rainer.strotmann@mailbox.org", role = c("aut", "cre"))
 Maintainer: Rainer Strotmann <rainer.strotmann@mailbox.org>
