@@ -10,15 +10,24 @@ make_study <- function(dm, treatment_table, sampling_scheme) {
   ex <- synthesize_sd_ex(dm, treatment_table)
   vs <- synthesize_vs(dm)
   lb <- synthesize_lb(dm)
-  pc <- make_sd_pc(dm, ex, vs, lb, sampling_scheme)
+  pc <- make_sd_pc(dm, ex, vs, lb, treatment_table, sampling_scheme)
 
-  dm <- left_join(dm,
-                  ex %>%
-                    group_by(.data$USUBJID) %>%
-                    mutate(RFENDTC = max(.data$EXENDTC, na.rm = T)) %>%
-                    distinct(.data$USUBJID, .data$RFENDTC),
-                  by = "USUBJID"
-  )
+  dm <- dm %>%
+    left_join(
+      ex %>%
+        group_by(.data$USUBJID) %>%
+        mutate(RFENDTC = max(.data$EXENDTC, na.rm = T)) %>%
+        distinct(.data$USUBJID, .data$RFENDTC),
+      by = "USUBJID") %>%
+
+    left_join(
+      treatment_table %>%
+        distinct(USUBJID, temp_arm = ARM, temp_armcd = ARMCD),
+      by = "USUBJID") %>%
+    mutate(ARM = case_when(ARM == "" ~ temp_arm, .default = ARM)) %>%
+    mutate(ARMCD = case_when(ARMCD == "" ~ temp_armcd, .default = ARMCD)) %>%
+    select(-c("temp_arm", "temp_armcd")) %>%
+    mutate(ARCTARM = ARM, ACTARMCD = ARMCD)
 
   out = lapply(
     list(
@@ -64,6 +73,10 @@ make_study_sad <- function() {
 }
 
 
+#' Synthesize SDTM data for a food effect study
+#'
+#' @return A list of SDTM domains.
+#' @export
 make_study_fe <- function() {
   dm <- synthesize_dm(
     nsubs = 16,
@@ -74,14 +87,71 @@ make_study_fe <- function() {
 
   treatment_table <- randomization_table(
     dm,
-    sequence = c("AB", "BA"),
-    adminday = c(1, 8),
+    trtdy = c(1, 8),
+    sequence = data.frame(
+      SEQUENCE = c("AB", "BA"),
+      ARMCD = c("AB", "BA"),
+      ARM = c("Fed administration - Fasted administration",
+              "Fasted administration - Fed administration")),
     treatment = data.frame(
       TREATMENT = c("A", "B"),
-      FOOD = c(1, 0)
-    ))
+      FOOD = c(1, 0)))
   make_study(dm, treatment_table, rich_sampling_scheme)
 }
 
 
+#' Synthesize SDTM data for a relative BA study
+#'
+#' @return A list of SDTM domains.
+#' @export
+make_study_rba <- function() {
+  dm <- synthesize_dm(
+    nsubs = 16,
+    studyid = "202400003",
+    nsites = 1,
+    female_fraction = 0,
+    duration = 14)
+
+  treatment_table <- randomization_table(
+    dm,
+    trtdy = c(1, 8),
+    sequence = data.frame(
+      SEQUENCE = c("AB", "BA"),
+      ARMCD = c("AB", "BA"),
+      ARM = c("Tablet - Capsule",
+              "Capsule - Tablet")),
+    treatment = data.frame(
+      TREATMENT = c("A", "B"),
+      EXDOSFRM = c("TABLET", "CAPSULE")))
+  make_study(dm, treatment_table, rich_sampling_scheme)
+}
+
+
+#' Synthesize SDTM data for a DDI study with rifampin and itraconazole
+#'
+#' @return A list of SDTM domains.
+#' @export
+make_study_itz_rifa <- function() {
+  dm <- synthesize_dm(
+    nsubs = 16,
+    studyid = "202400004",
+    nsites = 1,
+    female_fraction = 0,
+    duration = 14)
+
+  treatment_table <- randomization_table(
+    dm,
+    trtdy = c(1, 8, 22),
+    sequence = data.frame(
+      SEQUENCE = c("ABC"),
+      ARMCD = c("ABC"),
+      ARM = c("control - itraconazole - rifampicin")),
+    treatment = data.frame(
+      TREATMENT = c("A", "B", "C"),
+      CL_FACTOR = c(1, 0.1, 10)
+      )
+    )
+
+  make_study(dm, treatment_table, sampling_scheme = rich_sampling_scheme)
+}
 

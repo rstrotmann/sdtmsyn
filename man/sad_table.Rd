@@ -6,13 +6,27 @@
 \usage{
 sad_table(
   dm,
+  EXDOSE = 100,
+  EXDOSFRM = "TABLET",
+  EXTRT = "RS2023",
+  EXROUTE = "ORAL",
   treatment = data.frame(EXDOSE = c(50, 100, 200, 300), N = c(3, 6, 3, 3))
 )
 }
 \arguments{
 \item{dm}{The DM domain as data frame.}
 
+\item{EXDOSE}{The dose as numeric.}
+
+\item{EXDOSFRM}{The dosing form as character.}
+
+\item{EXTRT}{The treatment as character.}
+
+\item{EXROUTE}{The dosing route as character.}
+
 \item{treatment}{The treatments as data frame.}
+
+\item{FOOD}{Fed administration as numeric.}
 }
 \value{
 A data frame.

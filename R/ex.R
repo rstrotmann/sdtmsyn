@@ -3,53 +3,82 @@
 #' @param dm The DM domain as data frame
 #' @param sequence The sequences as vector of character strings where A, B, C,
 #' etc. identify the treatment codes.
-#' @param adminday A vector of the treatment days as numeric.
 #' @param treatment A data frame with TREATMENT giving the treatment codes and
 #' further columns specifying the respective conditions in the treatment
 #' periods.
+#' @param EXDOSE The dose as numeric.
+#' @param EXDOSFRM The dosing form as character.
+#' @param EXTRT The treatment as character.
+#' @param EXROUTE The dosing route as character.
+#' @param FOOD Fed administration as numeric.
+#' @param trtdy The treatment day(s)
 #'
 #' @return The randomization scheme as data frame.
 #' @export
 randomization_table <- function(
     dm,
-    sequence = c("AB", "BA"),
-    adminday = c(1, 8),
+    EXDOSE = 100,
+    EXDOSFRM = "TABLET",
+    EXTRT = "RS2023",
+    EXROUTE = "ORAL",
+    FOOD = 0,
+    sequence = data.frame(
+      SEQUENCE = c("AB", "BA"),
+      ARM = c("AB", "BA"),
+      ARMCD = c("AB", "BA")),
+    trtdy = c(1, 8),
     treatment = data.frame(
       TREATMENT = c("A", "B"),
-      DOSE = c(500, 250))
+      EXDOSE = c(500, 250))
 ) {
   temp <- dm %>%
     group_by(.data$ACTARMCD) %>%
     mutate(subject = case_when(.data$ACTARMCD != "SCRNFAIL" ~ row_number())) %>%
     ungroup() %>%
-    select(subject, USUBJID)
+    select(subject, USUBJID) %>%
+    mutate(EXDOSE = EXDOSE, EXDOSFRM = EXDOSFRM,
+           EXROUTE = EXROUTE, FOOD = FOOD) %>%
+    select(-any_of(setdiff(names(treatment), "TREATMENT")))
 
   nsubj <- max(temp$subject, na.rm = TRUE)
-  nperiod <- unique(sapply(sequence, stringr::str_length))
+  nperiod <- unique(sapply(sequence$SEQUENCE, stringr::str_length))
 
-  if(length(adminday) != nperiod)
+  if(length(trtdy) != nperiod)
     stop("Mismatch between number of administration days and periods")
 
-  randomizeBE::RL4(nsubj = nsubj, sequence)$rl %>%
+  randomizeBE::RL4(nsubj = nsubj, sequence$SEQUENCE)$rl %>%
     mutate(TREATMENT = strsplit(.data$sequence, split = "", fixed = TRUE)) %>%
     tidyr::unnest(TREATMENT) %>%
     group_by(.data$subject) %>%
     mutate(PERIOD = row_number()) %>%
-    mutate(EXDY = adminday[.data$PERIOD]) %>%
+    mutate(EPOCH = paste0("RANDOMIZED TREATMENT PERIOD ", PERIOD)) %>%
+    mutate(EXDY = trtdy[.data$PERIOD]) %>%
     left_join(treatment, by = "TREATMENT") %>%
-    left_join(temp, by = "subject")
+    left_join(temp, by = "subject") %>%
+    ungroup() %>%
+    left_join(sequence, by = c("sequence" = "SEQUENCE"))
 }
+
 
 
 #' Make a treatment table for SAD study
 #'
 #' @param dm The DM domain as data frame.
 #' @param treatment The treatments as data frame.
+#' @param EXDOSE The dose as numeric.
+#' @param EXDOSFRM The dosing form as character.
+#' @param EXTRT The treatment as character.
+#' @param EXROUTE The dosing route as character.
+#' @param FOOD Fed administration as numeric.
 #'
 #' @return A data frame.
 #' @export
 sad_table <- function(
     dm,
+    EXDOSE = 100,
+    EXDOSFRM = "TABLET",
+    EXTRT = "RS2023",
+    EXROUTE = "ORAL",
     treatment = data.frame(
       EXDOSE = c(50, 100, 200, 300),
       N = c(3, 6, 3, 3))
@@ -58,9 +87,12 @@ sad_table <- function(
   temp <- dm %>%
     filter(ACTARMCD != "SCRNFAIL") %>%
     mutate(subject = row_number()) %>%
-    select(subject, USUBJID)
+    select(subject, USUBJID) %>%
+    mutate(EXDOSE = EXDOSE, EXDOSFRM = EXDOSFRM, EXROUTE = EXROUTE) %>%
+    select(-any_of(setdiff(names(treatment), "TREATMENT")))
 
   nsubj <- max(temp$subject, na.rm = TRUE)
+  if(sum(treatment$N) != nsubj) stop("subject number mismatch!")
 
   temp %>%
     bind_cols(
@@ -74,7 +106,15 @@ sad_table <- function(
            sequence = "A",
            PERIOD = 1,
            TREATMENT = "A",
-           EXDY = 1)
+           EXDY = 1) %>%
+    mutate(EPOCH = "OPEN LABEL TREATMENT") %>%
+    mutate(FOOD = 0) %>%
+    group_by(EXDOSE) %>%
+    mutate(ARM = paste0("Cohort ", cur_group_id())) %>%
+    mutate(ARMCD = paste0("C", cur_group_id())) %>%
+    ungroup() %>%
+    mutate(ACTARM = ARM, ACTARMCD = ARMCD)
+
 }
 
 
@@ -138,12 +178,16 @@ sad_table <- function(
 #' @export
 synthesize_sd_ex <- function(
     dm,
-    randomization,
+    treatment_table,
     adminday = 1,
     drug = "RS2023",
     route = "ORAL",
     form = "TABLET",
     dose = 500) {
+  temp_randomization <- treatment_table %>%
+    select(any_of(c("USUBJID", "EXDY", "EXTRT", "EXDOSE", "EXROUTE",
+                    "EXDOSFRM", "EPOCH")))
+
   ex <- dm %>%
     filter(ACTARMCD != "SCRNFAIL") %>%
     select(c("STUDYID", "USUBJID", "RFSTDTC")) %>%
@@ -153,16 +197,21 @@ synthesize_sd_ex <- function(
       EXDOSE = dose,
       EXROUTE = route,
       EXDOSFRM = form) %>%
-    select(-any_of(setdiff(names(randomization), "USUBJID"))) %>%
-    left_join(randomization, by = "USUBJID") %>%
-    {if(length(unique(randomization$TREATMENT)) == 1)
-      mutate(., EPOCH = "OPEN LABEL TREATMENT") else
-      mutate(., EPOCH = paste0("TREATMENT PERIOD ", PERIOD))} %>%
-    mutate(EXSEQ = PERIOD) %>%
-    select(-c("seqno", "sequence", "subject", "TREATMENT", "PERIOD")) %>%
+    select(-any_of(setdiff(names(temp_randomization), "USUBJID"))) %>%
+    left_join(temp_randomization, by = "USUBJID") %>%
+    # {if(length(unique(randomization$TREATMENT)) == 1)
+    #   mutate(., EPOCH = "OPEN LABEL TREATMENT") else
+    #   mutate(., EPOCH = paste0("TREATMENT PERIOD ", PERIOD))} %>%
     mutate(EXSTDTC = .data$RFSTDTC + (.data$EXDY - 1) * 60 * 60 * 24) %>%
     mutate(EXENDTC = .data$EXSTDTC) %>%
-    as.data.frame()
+    arrange(.data$USUBJID, .data$EXSTDTC) %>%
+    group_by(.data$USUBJID) %>%
+    mutate(EXSEQ = row_number()) %>%
+    ungroup()
+    # select(c("STUDYID", "USUBJID", "DOMAIN", "RFSTDTC", "EXSEQ", "EXTRT",
+             # "EXDOSE", "EXROUTE", "EXDOSFRM", "EXDY", "EPOCH")) %>%
+    # select(-c("seqno", "sequence", "subject", "TREATMENT", "PERIOD")) %>%
+
   return(ex)
 }
 

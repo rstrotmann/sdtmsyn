@@ -6,18 +6,34 @@
 \usage{
 randomization_table(
   dm,
-  sequence = c("AB", "BA"),
-  adminday = c(1, 8),
-  treatment = data.frame(TREATMENT = c("A", "B"), DOSE = c(500, 250))
+  EXDOSE = 100,
+  EXDOSFRM = "TABLET",
+  EXTRT = "RS2023",
+  EXROUTE = "ORAL",
+  FOOD = 0,
+  sequence = data.frame(SEQUENCE = c("AB", "BA"), ARM = c("AB", "BA"), ARMCD = c("AB",
+    "BA")),
+  trtdy = c(1, 8),
+  treatment = data.frame(TREATMENT = c("A", "B"), EXDOSE = c(500, 250))
 )
 }
 \arguments{
 \item{dm}{The DM domain as data frame}
 
+\item{EXDOSE}{The dose as numeric.}
+
+\item{EXDOSFRM}{The dosing form as character.}
+
+\item{EXTRT}{The treatment as character.}
+
+\item{EXROUTE}{The dosing route as character.}
+
+\item{FOOD}{Fed administration as numeric.}
+
 \item{sequence}{The sequences as vector of character strings where A, B, C,
 etc. identify the treatment codes.}
 
-\item{adminday}{A vector of the treatment days as numeric.}
+\item{trtdy}{The treatment day(s)}
 
 \item{treatment}{A data frame with TREATMENT giving the treatment codes and
 further columns specifying the respective conditions in the treatment

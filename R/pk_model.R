@@ -9,6 +9,11 @@ pk_sim <- function(event_table) {
       mutate(EGFR = 1)
   }
 
+  if (!("CL_FACTOR" %in% colnames(event_table))) {
+    event_table <- event_table %>%
+      mutate(CL_FACTOR = 1)
+  }
+
   keep_columns <- event_table %>%
     select(any_of(c("id", "time", "NTIME", "PERIOD"))) %>%
     distinct()
@@ -23,10 +28,13 @@ pk_sim <- function(event_table) {
     d1 <- t.d1 * exp(eta.d1)
     fm <- t.fm * exp(eta.fm) # fraction metabolized
 
-    cl <- t.cl * exp(eta.cl) # metabolic clearance
+    cl <- t.cl * exp(eta.cl) * CL_FACTOR # metabolic clearance
 
     kem <- t.kem * exp(eta.kem) # elimination constant for metabolite
     fpar <- 1 * exp(eta.fpar) + FOOD * t.fpar1
+    if(FORM == 1) {
+      fpar <- fpar * t.fpar2
+    }
     q <- t.q * exp(eta.q)
 
     d / dt(depot) <- -ka * depot * fpar
@@ -41,12 +49,14 @@ pk_sim <- function(event_table) {
 
   theta <- c(
     t.ka = 0.8,
-    t.ka1 = 0.8, # food effect on Ka
+    t.ka1 = 0.8,  # food effect on Ka
     t.d1 = 1.8,
-    t.fpar1 = 2, # food effect on F
+    t.fpar1 = 2,  # food effect on F
+    t.fpar2 = 0.6, # capsule formulation effect on F
     t.ke = 30,
     t.q = 5,
     t.cl = 20,
+    #t.cl1 = -17,
     # t.kem = 10,
     t.kem = 2,
     t.fm = 0.8,

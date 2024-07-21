@@ -6,7 +6,7 @@
 \usage{
 synthesize_sd_ex(
   dm,
-  randomization,
+  treatment_table,
   adminday = 1,
   drug = "RS2023",
   route = "ORAL",
@@ -17,8 +17,6 @@ synthesize_sd_ex(
 \arguments{
 \item{dm}{The DM domain as data frame.}
 
-\item{randomization}{The randomization table as data frame.}
-
 \item{adminday}{The administration day(s) as numeric.}
 
 \item{drug}{The drug as character.}
@@ -28,6 +26,8 @@ synthesize_sd_ex(
 \item{form}{The dosage form as character.}
 
 \item{dose}{The dose as numeric.}
+
+\item{randomization}{The randomization table as data frame.}
 }
 \value{
 A data frame.

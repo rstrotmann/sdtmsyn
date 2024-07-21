@@ -1,0 +1,110 @@
+---
+title: "study-overview"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{study-overview}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidyverse)
+library(sdtmsyn)
+library(nif)
+
+nif_disclaimer()
+nif_option(silent = TRUE)
+```
+
+# SAD STUDY
+
+```{r fig.width=5, fig.height=5}
+sad_sdtm <- new_sdtm(make_study_sad())
+sad_nif <- new_nif() %>% 
+  add_administration(sad_sdtm, "RS2023") %>% 
+  add_observation(sad_sdtm, "pc", "RS2023", cmt = 2) %>% 
+  add_observation(sad_sdtm, "pc", "RS2023487A", cmt = 3)
+
+sad_nif %>%
+  plot(log = T, max_time = 50)
+```
+
+# FOOD EFFECT STUDY
+
+```{r}
+fe_sdtm <- new_sdtm(make_study_fe())
+fe_nif <- new_nif() %>% 
+  add_administration(fe_sdtm, "RS2023", keep = "EPOCH") %>% 
+  add_observation(fe_sdtm, "pc", "RS2023", cmt = 2, keep = "EPOCH") %>% 
+  mutate(PERIOD = as.numeric(str_sub(EPOCH, -1, -1))) %>% 
+  mutate(TREATMENT = str_sub(ACTARMCD, PERIOD, PERIOD)) %>% 
+  mutate(FOOD = case_match(TREATMENT, "B" ~ TRUE, "A"~ FALSE))
+
+fe_nif %>% 
+  plot(group = "FOOD", max_time = 16, mean = T, points = TRUE)
+```
+
+```{r}
+# fe_nif %>% 
+#   nca(analyte = "RS2023")
+```
+
+# RELATIVE BIOAVAILABILITY STUDY
+
+```{r}
+rba_sdtm <- new_sdtm(make_study_rba())
+rba_nif <- new_nif() %>% 
+  add_administration(rba_sdtm, "RS2023", keep = "EPOCH") %>% 
+  add_observation(rba_sdtm, "pc", "RS2023", cmt = 2, keep = "EPOCH") %>% 
+  mutate(PERIOD = as.numeric(str_sub(EPOCH, -1, -1))) %>% 
+  mutate(TREATMENT = str_sub(ACTARMCD, PERIOD, PERIOD)) %>% 
+  mutate(CAPSULE = case_match(TREATMENT, "B" ~ TRUE, "A"~ FALSE))
+
+rba_nif %>% 
+  plot(group = "CAPSULE", max_time = 16, mean = T, points = TRUE)
+
+rba_nif %>% 
+  plot(group = "CAPSULE", mean = T, points = TRUE, log = T, max_time = 200)
+```
+
+# ITRACONAZOLE/RIFAMPICIN STUDY
+
+```{r}
+itz_rifa_sdtm <- new_sdtm(make_study_itz_rifa())
+itz_rifa_nif <- new_nif() %>% 
+  add_administration(itz_rifa_sdtm, "RS2023", keep = "EPOCH") %>% 
+  add_observation(itz_rifa_sdtm, "pc", "RS2023", cmt = 2, keep = "EPOCH") %>% 
+  add_observation(itz_rifa_sdtm, "pc", "RS2023487A", cmt = 3, keep = "EPOCH") %>% 
+  mutate(PERIOD = as.numeric(str_sub(EPOCH, -1, -1))) %>% 
+  mutate(TREATMENT = c("control", "itraconazole", "rifampicin") [PERIOD])
+  # mutate(TREATMENT = str_sub(ACTARMCD, PERIOD, PERIOD)) %>% 
+  # mutate(ITZ = case_match(TREATMENT, "B" ~ TRUE, "A"~ FALSE))
+
+itz_rifa_nif %>% 
+  plot("RS2023", group = "TREATMENT", max_time = 24, points = T, mean = T,
+       time = "NTIME", title = "RS2023", log = F)
+
+itz_rifa_nif %>% 
+  plot("RS2023", group = "TREATMENT", points = T, mean = T,
+       time = "NTIME", title = "RS2023", log = T)
+
+itz_rifa_nif %>% 
+  plot("RS2023487A", group = "TREATMENT", max_time = 24, time = "NTIME", points = T,
+       mean = T, title = "RS2023487A")
+
+```
+
+
+
+
+
+
+
+

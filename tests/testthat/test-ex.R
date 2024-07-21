@@ -16,82 +16,50 @@ test_that("make_randomization works", {
 
 test_that("randomization for single-dose", {
   dm <- synthesize_dm()
-  r <- randomization_table(
-    dm,
-    sequence = "A",
-    adminday = 1,
-    treatment = data.frame(TREATMENT = "A")
-  )
+
+  r <- randomization_table(dm)
   expect_equal(
     dm %>%
       filter(ACTARMCD != "SCRNFAIL") %>%
       nrow(),
-    nrow(r)
+    nrow(r) /2
   )
 })
 
 
 test_that("ex for single dose", {
   dm <- synthesize_dm()
+
   r <- randomization_table(
     dm,
-    sequence = "A",
-    adminday = 1,
+    sequence = data.frame(
+      SEQUENCE = "A"
+    ),
+    trtdy = 1,
     treatment = data.frame(
       TREATMENT = c("A"))
   )
-  synthesize_sd_ex(dm, r)
+  expect_no_error(
+    ex <- synthesize_sd_ex(dm, r))
+
+  expect_equal(nrow(ex),
+               dm %>%
+                 filter(ACTARMCD != "SCRNFAIL") %>%
+                 nrow())
 })
 
 
 test_that("ex for SAD", {
   dm <- synthesize_dm(nsub = 12)
-  r <- randomization_table(
+  r <- sad_table(
     dm,
-    sequence = c("A", "B", "C", "D"),
-    adminday = c(1),
-    treatment = data.frame(
-      TREATMENT = c("A", "B", "C", "D"),
-      DOSE = c(50, 100, 200, 400))
+    treatment = tibble::tribble(
+      ~EXDOSE, ~N,
+      5,       6,
+      10,      6)
   )
-  synthesize_sd_ex(dm, r)
-})
-
-
-
-test_that("synthesize_sd_ex works", {
-  dm <- synthesize_dm()
-  r <- randomization_table(
-    dm,
-    treatment = data.frame(
-      TREATMENT = c("A", "B"),
-      DOSE = c(500, 250),
-      EXDOSFRM = c("TABLET", "CAPSULE"))
-  )
-  synthesize_sd_ex(dm, r)
-})
-
-
-test_that("complex crossover", {
-  dm <- synthesize_dm(nsubs = 12)
-  r <- randomization_table(
-    dm,
-    sequence = c("ABC", "BAC"),
-    adminday = c(1, 8, 15),
-    treatment = data.frame(
-      TREATMENT = c("A", "B", "C"),
-      FASTED = c(0, 1, 1),
-      PPI = c(0, 0, 1)
-    )
-  )
-  synthesize_sd_ex(dm, r)
-})
-
-
-test_that("SAD", {
-  dm <- synthesize_dm(nsubs = 15)
-  r <- sad_table(dm)
-  synthesize_sd_ex(dm, r)
+  expect_no_error(
+    synthesize_sd_ex(dm, r))
 })
 
 

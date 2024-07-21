@@ -4,7 +4,7 @@
 \alias{make_sd_pc}
 \title{Create PC based on single-dose administration}
 \usage{
-make_sd_pc(dm, ex, vs, lb, sampling_scheme)
+make_sd_pc(dm, ex, vs, lb, treatment_table, sampling_scheme)
 }
 \arguments{
 \item{dm}{The DM domain as data frame.}

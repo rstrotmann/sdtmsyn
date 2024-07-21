@@ -241,14 +241,16 @@ subject_baseline_data <- function(dm, vs, lb) {
     select(c("USUBJID", "BL_CREAT" = "LBSTRESN"))
 
   sbs <- dm %>%
-    filter(.data$ACTARMCD != "SCRNFAIL") %>%
     left_join(baseline_vs, by = "USUBJID") %>%
     left_join(baseline_lb, by = "USUBJID") %>%
+    filter(.data$ACTARMCD != "SCRNFAIL") %>%
     mutate(EGFR = egfr_cg(.data$BL_CREAT, .data$AGE, .data$SEX, .data$RACE,
                           .data$WEIGHT, molar = T)) %>%
     select(c("USUBJID", "RFSTDTC", "SEX", "AGE", "HEIGHT", "WEIGHT", "EGFR",
              "ACTARMCD")) %>%
     mutate(ID = row_number())
+
+  return(sbs)
 }
 
 
