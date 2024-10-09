@@ -1,0 +1,53 @@
+---
+title: "fe-study"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{fe-study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, echo = F, message =F}
+library(tidyverse)
+library(sdtmsyn)
+library(nif)
+
+nif_option(watermark = "not QCed")
+```
+
+```{r}
+sdtm <- new_sdtm(sdtmsyn::sdtm_data_fe) %>%
+         add_analyte_mapping('RS2023', 'RS2023')
+```
+
+```{r message = F}
+nif <- new_nif(sdtm) %>% 
+  mutate(PERIOD = case_when(TRTDY> 7 ~ 2, .default = 1)) %>% 
+  mutate(FED = case_match(str_sub(ACTARMCD, PERIOD, PERIOD), "B" ~ 1, "A" ~ 0))
+```
+
+```{r}
+head(nif, 5)
+summary(nif)
+```
+
+```{r}
+plot(nif, group = "FED", mean = F, min_time = 0, max_time = 12, points = T,
+     admin = "RS2023") +
+  watermark()
+```
+
+```{r}
+nif %>% 
+  nca("RS2023", group = "FED") %>% 
+  nca_summary_table(group = "FED")
+```
+
+

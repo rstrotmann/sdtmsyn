@@ -1,0 +1,106 @@
+---
+title: "sad-study"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sad-study}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, echo = F, message =F}
+library(tidyverse)
+library(sdtmsyn)
+library(nif)
+
+nif_option(watermark = "Test")
+```
+
+```{r}
+sdtm <- new_sdtm(sdtmsyn::sdtm_data_sad) %>%
+         add_analyte_mapping('RS2023', 'RS2023')
+```
+
+```{r message = F}
+nif <- new_nif(sdtm)
+```
+
+```{r}
+head(nif, 5)
+summary(nif)
+```
+
+```{r}
+plot(nif, mean = F, min_time = 0, max_time = 12, points = T,
+     admin = "RS2023", log = T) +
+  watermark()
+```
+
+```{r, fig.width=3, fig.height=3}
+nca <- nif %>% 
+  nca("RS2023")
+
+nca %>% 
+  nca_summary_table()
+
+nca %>%
+  nca_power_model()
+```
+
+```{r}
+library(nlmixr2)
+
+two.compartment <- function() {
+  ini({
+    tka <- log(0.3) #0.45 # Log Ka
+    tq <- log(2)
+    tcl <- log(20) #1 # Log Cl
+    tvc <- log(1000) #3.45    # Log Vc
+    tvp <- log(300) # Log Vp
+    eta.ka ~ 0.6 # IIV on ka
+    eta.q ~ 0.6
+    eta.cl ~ 0.3 # IIV on CL
+    # eta.vc ~ 0.1 # IIV on Vc
+    # eta.vp ~ 0.1 # IIV on Vp
+    prop.err <- 0.5
+  })
+  
+  model({
+    ka <- exp(tka + eta.ka)
+    cl <- exp(tcl + eta.cl)
+    # vc <- exp(tvc + eta.vc)
+    vc <- exp(tvc)
+    # vp <- exp(tvp + eta.vp)
+    vp <- exp(tvp)
+    q <- exp(tq + eta.q)
+    linCmt() ~ prop(prop.err)
+  })
+}
+  
+fit1 <- nlmixr2(two.compartment, nif,  est="saem", saemControl(print=0))
+fit1$parFixed 
+plot(fit1)
+
+fit1 %>% 
+  as.data.frame() %>% 
+  filter(as.numeric(ID) > 30) %>% 
+  ggplot(aes(x= TIME, y= DV, group = ID)) +
+  geom_point() +
+  geom_line(aes(x=TIME, y=IPRED, color = "red")) +
+  # scale_y_log10() +
+  theme_bw() +
+  facet_wrap(~ID) +
+  xlim(0, 24)
+  
+```
+
+
+
+
+

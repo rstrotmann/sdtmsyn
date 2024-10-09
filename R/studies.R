@@ -155,3 +155,35 @@ make_study_itz_rifa <- function() {
   make_study(dm, treatment_table, sampling_scheme = rich_sampling_scheme)
 }
 
+
+#' Synthesize SDTM data for a renal impairment study
+#'
+#' @return A list of SDTM domains.
+#' @export
+make_study_ri <- function() {
+  dm <- synthesize_dm(
+    nsubs = 36,
+    studyid = "202400004",
+    nsites = 1,
+    female_fraction = 0.5,
+    duration = 7)
+
+  treatment_table <- randomization_table(
+    dm,
+    trtdy = c(1),
+    sequence = data.frame(
+      SEQUENCE = c("A", "B", "C"),
+      ARMCD = c("normal", "mild", "moderate"),
+      ARM = c("normal", "mild", "moderate")),
+    treatment = data.frame(
+      TREATMENT = c("A", "B", "C"),
+      target_egfr = c(120, 55, 35)
+    )
+  )
+
+  dm <- left_join(
+    dm, select(treatment_table, "USUBJID", "target_egfr"), by = "USUBJID"
+  )
+
+  make_study(dm, treatment_table, rich_sampling_scheme)
+}

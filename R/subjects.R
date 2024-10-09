@@ -269,9 +269,13 @@ subject_baseline_data <- function(dm, vs, lb) {
 #' @import lubridate
 #' @return The disposition data for the simulated subjects as data frame.
 #' @keywords internal
-synthesize_subjects <- function(studyid = "2023001", nsubs = 10, nsites = 4,
-                                screenfailure_rate = 0.25,
-                                start_date = "2000-12-20 10:00") {
+synthesize_subjects <- function(
+    studyid = "2023001",
+    nsubs = 10,
+    nsites = 4,
+    screenfailure_rate = 0.25,
+    start_date = "2000-12-20 10:00") {
+
   current_date <- lubridate::as_datetime(start_date, format = "%Y-%m-%d %H:%M")
   site_names <- 100 + seq(1:nsites)
   sbs <- data.frame(
@@ -288,19 +292,19 @@ synthesize_subjects <- function(studyid = "2023001", nsubs = 10, nsites = 4,
     siteid <- as.character(site_names[current_site])
     enrolled <- runif(1) > screenfailure_rate
     sbs_by_site[current_site] <- sbs_by_site[current_site] + 1
-    sbs <- add_row(sbs,
-                   SITEID = siteid,
-                   SUBJID = paste0(
-                     siteid,
-                     as.character(formatC(current_sb_no, width = 4, flag = "0"))),
-                   ACTARMCD = case_when(!enrolled ~ "SCRNFAIL", .default = ""),
-                   ACTARM = case_when(!enrolled ~ "Screen Failure", .default = ""),
-                   RFICDTC = current_date + rnorm(1, 0, 1) * 60 * 60,
-                   RFSTDTC = case_when(
-                     enrolled ~ RFICDTC + floor(rnorm(1, 10, 2)) * 60 * 60 * 24,
-                     .default = NA
-                   ),
-                   RFXSTDTC = RFSTDTC
+    sbs <- add_row(
+      sbs,
+      SITEID = siteid,
+      SUBJID = paste0(
+        siteid,
+        as.character(formatC(current_sb_no, width = 4, flag = "0"))),
+      ACTARMCD = case_when(!enrolled ~ "SCRNFAIL", .default = ""),
+      ACTARM = case_when(!enrolled ~ "Screen Failure", .default = ""),
+      RFICDTC = current_date + rnorm(1, 0, 1) * 60 * 60,
+      RFSTDTC = case_when(
+        enrolled ~ RFICDTC + floor(rnorm(1, 10, 2)) * 60 * 60 * 24,
+        .default = NA),
+      RFXSTDTC = RFSTDTC
     )
   }
   return(sbs[-1, ])

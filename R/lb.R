@@ -60,10 +60,12 @@ synthesize_crea <- function(dm, crea_method = crea_mdrd) {
   m <- stats::glm(EGFR ~ AGE + female,
                   family = "gaussian",
                   data = empirical_egfr)
-  dm <- dm %>%
-    mutate(target_egfr = stats::predict(m,
-      dm %>%
-        mutate(female = case_when(SEX == "F" ~ 1, .default = 0))))
+  if(!"target_egfr" %in% names(dm)) {
+    dm <- dm %>%
+      mutate(target_egfr = stats::predict(m,
+        dm %>%
+          mutate(female = case_when(SEX == "F" ~ 1, .default = 0))))
+  }
   renal <- rnorm(nrow(dm), dm$target_egfr, 13)
   dm %>%
     mutate(EGFR = renal) %>%
