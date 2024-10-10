@@ -1,126 +1,48 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url>
-    <loc>/404.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE-text.html</loc>
-  </url>
-  <url>
-    <loc>/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>/articles/study-overview.html</loc>
-  </url>
-  <url>
-    <loc>/authors.html</loc>
-  </url>
-  <url>
-    <loc>/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/crea_mdrd.html</loc>
-  </url>
-  <url>
-    <loc>/reference/crea_raynaud.html</loc>
-  </url>
-  <url>
-    <loc>/reference/egfr_cg.html</loc>
-  </url>
-  <url>
-    <loc>/reference/egfr_mdrd.html</loc>
-  </url>
-  <url>
-    <loc>/reference/egfr_raynaud.html</loc>
-  </url>
-  <url>
-    <loc>/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>/reference/isofy_dates.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lbm_boer.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lbm_hume.html</loc>
-  </url>
-  <url>
-    <loc>/reference/lbm_peters.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_sd_pc.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_study.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_study_fe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_study_itz_rifa.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_study_rba.html</loc>
-  </url>
-  <url>
-    <loc>/reference/make_study_sad.html</loc>
-  </url>
-  <url>
-    <loc>/reference/miss_admins.html</loc>
-  </url>
-  <url>
-    <loc>/reference/pk_sim.html</loc>
-  </url>
-  <url>
-    <loc>/reference/randomization_table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/recode_sex.html</loc>
-  </url>
-  <url>
-    <loc>/reference/reformat_date.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sad_table.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sdtm_data_ddi.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sdtm_data_fe.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sdtm_data_rba.html</loc>
-  </url>
-  <url>
-    <loc>/reference/sdtm_data_sad.html</loc>
-  </url>
-  <url>
-    <loc>/reference/subject_baseline_data.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_crea.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_dm.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_lb.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_md_ex.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_sd_ex.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_subjects.html</loc>
-  </url>
-  <url>
-    <loc>/reference/synthesize_vs.html</loc>
-  </url>
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/LICENSE.html</loc></url>
+<url><loc>/articles/fe-study.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/sad-study.html</loc></url>
+<url><loc>/articles/study-overview.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/crea_mdrd.html</loc></url>
+<url><loc>/reference/crea_raynaud.html</loc></url>
+<url><loc>/reference/egfr_cg.html</loc></url>
+<url><loc>/reference/egfr_mdrd.html</loc></url>
+<url><loc>/reference/egfr_raynaud.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/isofy_dates.html</loc></url>
+<url><loc>/reference/lbm_boer.html</loc></url>
+<url><loc>/reference/lbm_hume.html</loc></url>
+<url><loc>/reference/lbm_peters.html</loc></url>
+<url><loc>/reference/make_sd_pc.html</loc></url>
+<url><loc>/reference/make_study.html</loc></url>
+<url><loc>/reference/make_study_fe.html</loc></url>
+<url><loc>/reference/make_study_itz_rifa.html</loc></url>
+<url><loc>/reference/make_study_rba.html</loc></url>
+<url><loc>/reference/make_study_ri.html</loc></url>
+<url><loc>/reference/make_study_sad.html</loc></url>
+<url><loc>/reference/miss_admins.html</loc></url>
+<url><loc>/reference/pk_sim.html</loc></url>
+<url><loc>/reference/randomization_table.html</loc></url>
+<url><loc>/reference/recode_sex.html</loc></url>
+<url><loc>/reference/reformat_date.html</loc></url>
+<url><loc>/reference/sad_table.html</loc></url>
+<url><loc>/reference/sdtm_data_ddi.html</loc></url>
+<url><loc>/reference/sdtm_data_fe.html</loc></url>
+<url><loc>/reference/sdtm_data_rba.html</loc></url>
+<url><loc>/reference/sdtm_data_ri.html</loc></url>
+<url><loc>/reference/sdtm_data_sad.html</loc></url>
+<url><loc>/reference/subject_baseline_data.html</loc></url>
+<url><loc>/reference/synthesize_crea.html</loc></url>
+<url><loc>/reference/synthesize_dm.html</loc></url>
+<url><loc>/reference/synthesize_lb.html</loc></url>
+<url><loc>/reference/synthesize_md_ex.html</loc></url>
+<url><loc>/reference/synthesize_sd_ex.html</loc></url>
+<url><loc>/reference/synthesize_subjects.html</loc></url>
+<url><loc>/reference/synthesize_vs.html</loc></url>
 </urlset>
+

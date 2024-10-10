@@ -25,8 +25,6 @@ sad_table(
 \item{EXROUTE}{The dosing route as character.}
 
 \item{treatment}{The treatments as data frame.}
-
-\item{FOOD}{Fed administration as numeric.}
 }
 \value{
 A data frame.

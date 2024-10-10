@@ -8,12 +8,14 @@
 #' @param lb The LB domain as data frame.
 #' @param sampling_scheme The PK sampling scheme as data frame.
 #' @return The PC domain as data frame.
+#'
+#' @importFrom stats runif
+#'
 #' @keywords internal
 make_sd_pc <- function(dm, ex, vs, lb, treatment_table, sampling_scheme) {
   sbs <- subject_baseline_data(dm, vs, lb) %>%
     recode_sex() %>%
-    select(any_of(c("ID", "USUBJID", "SEX", "AGE", "HEIGHT", "WEIGHT", "EGFR"))) #%>%
-    # left_join(treatment_table, by = "USUBJID")
+    select(any_of(c("ID", "USUBJID", "SEX", "AGE", "HEIGHT", "WEIGHT", "EGFR")))
 
   admin <- sbs %>%
     left_join(treatment_table, by = "USUBJID") %>%
@@ -31,20 +33,26 @@ make_sd_pc <- function(dm, ex, vs, lb, treatment_table, sampling_scheme) {
     rowwise() %>%
     mutate(obs = list(sampling_scheme$time)) %>%
     tidyr::unnest(obs) %>%
-    left_join(select(sampling_scheme, time, window), by = c("obs" = "time")) %>%
+    left_join(select(sampling_scheme, "time", "window"),
+              by = c("obs" = "time")) %>%
     mutate(NTIME = obs) %>%
-    mutate(time = time + obs) %>%
-    mutate(time = case_when(obs == 0 ~ time - runif(1) * window,
-                            .default = time - window/2 + runif(1) * window)) %>%
+    mutate(time = .data$time + .data$obs) %>%
+    mutate(time = case_when(
+      obs == 0 ~ .data$time - runif(1) * .data$window,
+      .default = .data$time - .data$window/2 + runif(1) * .data$window)) %>%
     select(-c("window", "obs")) %>%
     as.data.frame() %>%
-    mutate(FORM = case_match(EXDOSFRM, "TABLET" ~ 0, "CAPSULE" ~ 1))
+    mutate(FORM = case_match(.data$EXDOSFRM, "TABLET" ~ 0, "CAPSULE" ~ 1))
 
   ev <- bind_rows(admin, obs) %>%
-    arrange(USUBJID, time, -evid)
+    arrange(.data$USUBJID, .data$time, -.data$evid)
 
   sim <- pk_sim(ev) %>%
-    left_join(distinct(sbs, ID, USUBJID), by = c("id" = "ID"))
+    left_join(
+      sbs %>%
+        distinct(.data$ID, .data$USUBJID),
+      by = c("id" = "ID")
+    )
 
   pc <- sim %>%
     select(c("USUBJID", "ID" = "id", "time", "NTIME", "c_centr", "c_metab")) %>%

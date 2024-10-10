@@ -267,6 +267,7 @@ subject_baseline_data <- function(dm, vs, lb) {
 #' @param start_date The fictional study start date.
 #'
 #' @import lubridate
+#' @importFrom stats rnorm
 #' @return The disposition data for the simulated subjects as data frame.
 #' @keywords internal
 synthesize_subjects <- function(
@@ -302,9 +303,9 @@ synthesize_subjects <- function(
       ACTARM = case_when(!enrolled ~ "Screen Failure", .default = ""),
       RFICDTC = current_date + rnorm(1, 0, 1) * 60 * 60,
       RFSTDTC = case_when(
-        enrolled ~ RFICDTC + floor(rnorm(1, 10, 2)) * 60 * 60 * 24,
+        enrolled ~ .data$RFICDTC + floor(rnorm(1, 10, 2)) * 60 * 60 * 24,
         .default = NA),
-      RFXSTDTC = RFSTDTC
+      RFXSTDTC = .data$RFSTDTC
     )
   }
   return(sbs[-1, ])

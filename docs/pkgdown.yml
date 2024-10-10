@@ -1,7 +1,8 @@
-pandoc: 3.1.1
-pkgdown: 2.0.8
+pandoc: '3.2'
+pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
+  fe-study: fe-study.html
+  sad-study: sad-study.html
   study-overview: study-overview.html
-last_built: 2024-07-21T15:09Z
-
+last_built: 2024-10-10T07:00Z

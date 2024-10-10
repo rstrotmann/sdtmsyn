@@ -19,6 +19,7 @@
 #'   Can currently be `crea_mdrd` or `crea_raynaud`.
 #' @importFrom stats glm
 #' @importFrom stats predict
+#' @importFrom stats rnorm
 #' @return A DM domain with additional fields as data frame.
 #' @keywords internal
 synthesize_crea <- function(dm, crea_method = crea_mdrd) {
@@ -54,8 +55,8 @@ synthesize_crea <- function(dm, crea_method = crea_mdrd) {
     1, 80, 84, 40, 64, 14, 46, 114, 46, 56, 62, 73, 88,
     1, 85, NA, 27, 59, 14, 30, 87, 36, 48, 61, 69, 78
   ) %>%
-    mutate(AGE = age_lo + (age_hi - age_lo) / 2) %>%
-    mutate(EGFR = Mean)
+    mutate(AGE = .data$age_lo + (.data$age_hi - .data$age_lo) / 2) %>%
+    mutate(EGFR = .data$Mean)
 
   m <- stats::glm(EGFR ~ AGE + female,
                   family = "gaussian",
@@ -64,12 +65,12 @@ synthesize_crea <- function(dm, crea_method = crea_mdrd) {
     dm <- dm %>%
       mutate(target_egfr = stats::predict(m,
         dm %>%
-          mutate(female = case_when(SEX == "F" ~ 1, .default = 0))))
+          mutate(female = case_when(.data$SEX == "F" ~ 1, .default = 0))))
   }
   renal <- rnorm(nrow(dm), dm$target_egfr, 13)
   dm %>%
     mutate(EGFR = renal) %>%
-    mutate(CREA = crea_method(EGFR, AGE, SEX, RACE))
+    mutate(CREA = crea_method(.data$EGFR, .data$AGE, .data$SEX, .data$RACE))
 }
 
 

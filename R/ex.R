@@ -69,7 +69,6 @@ randomization_table <- function(
 #' @param EXDOSFRM The dosing form as character.
 #' @param EXTRT The treatment as character.
 #' @param EXROUTE The dosing route as character.
-#' @param FOOD Fed administration as numeric.
 #'
 #' @return A data frame.
 #' @export
@@ -167,12 +166,12 @@ sad_table <- function(
 #' Create EX domain for single-dose studies
 #'
 #' @param dm The DM domain as data frame.
-#' @param randomization The randomization table as data frame.
 #' @param adminday The administration day(s) as numeric.
 #' @param drug The drug as character.
 #' @param route The administration route as character.
 #' @param form The dosage form as character.
 #' @param dose The dose as numeric.
+#' @param treatment_table The randomization table.
 #'
 #' @return A data frame.
 #' @export
@@ -189,7 +188,7 @@ synthesize_sd_ex <- function(
                     "EXDOSFRM", "EPOCH")))
 
   ex <- dm %>%
-    filter(ACTARMCD != "SCRNFAIL") %>%
+    filter(.data$ACTARMCD != "SCRNFAIL") %>%
     select(c("STUDYID", "USUBJID", "RFSTDTC")) %>%
     mutate(DOMAIN = "EX") %>%
     mutate(
@@ -305,6 +304,7 @@ synthesize_md_ex <- function(dm,
                        missed_prob = 0.15,
                        missed_doses = T,
                        red_prob = 0.3){
+  . <- NULL
   ex <- dm %>%
     dplyr::filter(.data$ACTARMCD != "SCRNFAIL") %>%
     dplyr::select(c("STUDYID", "USUBJID", "RFSTDTC")) %>%
@@ -323,7 +323,7 @@ synthesize_md_ex <- function(dm,
   if (missed_doses == TRUE) {
     ex <- ex %>%
       dplyr::group_by(.data$DOMAIN, .data$STUDYID, .data$USUBJID) %>%
-      tidyr::expand(miss_admins(EXSTDTC, .data$EXENDTC, red_prob = red_prob)) %>%
+      tidyr::expand(miss_admins(.data$EXSTDTC, .data$EXENDTC, red_prob = red_prob)) %>%
       dplyr::ungroup() %>%
       as.data.frame()
   }

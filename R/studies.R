@@ -22,12 +22,13 @@ make_study <- function(dm, treatment_table, sampling_scheme) {
 
     left_join(
       treatment_table %>%
-        distinct(USUBJID, temp_arm = ARM, temp_armcd = ARMCD),
+        distinct(.data$USUBJID, temp_arm = .data$ARM, temp_armcd = .data$ARMCD),
       by = "USUBJID") %>%
-    mutate(ARM = case_when(ARM == "" ~ temp_arm, .default = ARM)) %>%
-    mutate(ARMCD = case_when(ARMCD == "" ~ temp_armcd, .default = ARMCD)) %>%
+    mutate(ARM = case_when(ARM == "" ~ temp_arm, .default = .data$ARM)) %>%
+    mutate(ARMCD = case_when(ARMCD == "" ~ .data$temp_armcd,
+                             .default = .data$ARMCD)) %>%
     select(-c("temp_arm", "temp_armcd")) %>%
-    mutate(ARCTARM = ARM, ACTARMCD = ARMCD)
+    mutate(ARCTARM = .data$ARM, ACTARMCD = .data$ARMCD)
 
   out = lapply(
     list(
